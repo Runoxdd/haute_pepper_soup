@@ -17,7 +17,7 @@ A premium Nigerian pepper soup delivery website. Customers browse a curated menu
 | Email | Resend |
 | Image storage | Uploadthing |
 | Rate limiting | Upstash Redis |
-| Deployment | Railway |
+| Deployment | Vercel |
 
 ---
 
@@ -74,7 +74,7 @@ npx tsx scripts/seed.ts
 
 ## Environment Variables
 
-Copy `.env.example` to `.env.local` and fill in all values before running locally. In production, add these to the Railway service's Variables tab.
+Copy `.env.example` to `.env.local` and fill in all values before running locally. In production, add these in the Vercel project Settings > Environment Variables.
 
 | Group | Variables | Description |
 |---|---|---|
@@ -98,15 +98,15 @@ See `.env.example` for the full list with inline comments and instructions for o
 
 ## Deployment
 
-This project is deployed on [Railway](https://railway.app). Railway is used instead of Vercel because Vercel's free Hobby plan prohibits commercial use. Railway's Hobby plan ($5/month after the initial $5 trial credit) allows commercial use and runs a persistent Node.js server with no cold starts.
+This project deploys to [Vercel](https://vercel.com) — the platform built by the creators of Next.js. The free Hobby tier works for development and early launch. Upgrade to Pro ($20/month) when the business scales.
 
 For a full step-by-step walkthrough — including setting environment variables, configuring a custom domain, and enabling automatic deployments on push — see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 **Deployment in brief:**
 1. Push the repository to GitHub.
-2. Go to [railway.app](https://railway.app), create a new project, and connect the GitHub repo.
-3. Add all environment variables in the Railway dashboard under the service's Variables tab.
-4. Railway auto-detects Next.js and deploys automatically on every push to `main`.
+2. Go to [vercel.com](https://vercel.com), import the GitHub repo.
+3. Add all environment variables in the Vercel project Settings > Environment Variables.
+4. Vercel auto-detects Next.js and deploys automatically on every push to `main`.
 
 ---
 
@@ -134,7 +134,7 @@ The admin panel provides:
 |---|---|
 | [`docs/superpowers/specs/2026-03-17-haute-pepper-soup-design.md`](docs/superpowers/specs/2026-03-17-haute-pepper-soup-design.md) | Full design specification: data model, API routes, component structure, and UI decisions |
 | [`docs/superpowers/specs/2026-03-17-haute-pepper-soup-services-guide.md`](docs/superpowers/specs/2026-03-17-haute-pepper-soup-services-guide.md) | Services setup guide: step-by-step signup instructions for every external service and a full cost breakdown |
-| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Step-by-step Railway deployment guide |
+| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Step-by-step Vercel deployment guide |
 
 An owner guide written for the non-technical business owner — covering how to manage the menu, view orders, and handle common tasks — will be added to `docs/` before handover.
 
