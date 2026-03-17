@@ -199,7 +199,6 @@ function TagEditor({
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       <Reorder.Group
-        axis="x"
         values={tags}
         onReorder={onChange}
         className="flex flex-wrap items-center gap-1.5"

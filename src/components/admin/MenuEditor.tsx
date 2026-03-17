@@ -503,7 +503,6 @@ function SidesPanel({
   return (
     <div className="flex flex-wrap items-center gap-1.5" aria-label={`Side options for dish ${itemId}`}>
       <Reorder.Group
-        axis="x"
         values={sides}
         onReorder={onUpdate}
         className="flex flex-wrap items-center gap-1.5"
