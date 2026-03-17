@@ -39,32 +39,37 @@ A premium Nigerian pepper soup delivery website. Customers browse a curated menu
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm (`npm install -g pnpm`)
+- [Node.js 20+](https://nodejs.org/) (download the LTS installer)
 
 ### Local Setup
 
+**On Mac/Linux:**
 ```bash
-# 1. Clone the repository
 git clone <repo-url>
 cd haute-pepper-soup
+npm install -g pnpm        # install pnpm (one-time)
+pnpm install               # install dependencies
+cp .env.example .env.local # copy env template
+pnpm dev                   # start dev server
+```
 
-# 2. Install dependencies
+**On Windows (Command Prompt):**
+```cmd
+git clone <repo-url>
+cd haute-pepper-soup
+npm install -g pnpm
 pnpm install
-
-# 3. Copy the environment variables template
-cp .env.example .env.local
-# Open .env.local and fill in all required values (see Environment Variables below)
-
-# 4. Start the development server
+copy .env.example .env.local
 pnpm dev
 ```
 
-The app will be available at [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Seed the Database
+**Note:** The app works without any environment variables configured — it uses built-in mock data (3 sample dishes, 4 sample orders) so you can preview the full site immediately. Set up the real services when you're ready to go live.
 
-To populate the database with placeholder menu items for development:
+### Seed the Database (Optional)
+
+If you have MongoDB connected and want to populate it with sample dishes:
 
 ```bash
 npx tsx scripts/seed.ts
