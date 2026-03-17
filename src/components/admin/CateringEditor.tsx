@@ -300,8 +300,8 @@ function TagEditor({
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") { e.preventDefault(); handleAdd(); }
-              if (e.key === "Escape") { setAdding(false); setNewTag(""); }
+              if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); handleAdd(); }
+              if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); setAdding(false); setNewTag(""); }
             }}
             placeholder={placeholder}
             className="w-44 rounded-full border border-brand-lemon-dark/30 dark:border-brand-lemon/30 bg-transparent px-3 py-1 text-xs text-text-primary placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon"
