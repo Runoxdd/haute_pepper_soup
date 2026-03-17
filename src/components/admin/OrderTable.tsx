@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { formatNGN, formatDate } from "@/lib/format";
 import type { OrderStatus } from "@/types";
 
@@ -377,6 +378,7 @@ function OrderRow({
   onResendNotification,
   isActionLoading,
 }: OrderRowProps) {
+  const [confirmComplete, setConfirmComplete] = useState(false);
   const itemsCount = order.items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
@@ -451,7 +453,7 @@ function OrderRow({
             {order.status === "contacted" && (
               <Button
                 variant="ghost"
-                onClick={() => onUpdateStatus(order._id, "completed")}
+                onClick={() => setConfirmComplete(true)}
                 loading={isActionLoading}
                 className="!px-2 !py-1 !text-[11px]"
                 aria-label={`Mark ${order.reference} as completed`}
@@ -471,6 +473,22 @@ function OrderRow({
               </Button>
             )}
           </div>
+
+          {/* Completion confirmation dialog */}
+          <ConfirmDialog
+            open={confirmComplete}
+            variant="default"
+            title="Complete Order"
+            message={`Mark order ${order.reference} from ${order.customer_name} as completed? This action cannot be undone.`}
+            confirmLabel="Mark Completed"
+            cancelLabel="Cancel"
+            loading={isActionLoading}
+            onConfirm={() => {
+              onUpdateStatus(order._id, "completed");
+              setConfirmComplete(false);
+            }}
+            onCancel={() => setConfirmComplete(false)}
+          />
         </td>
       </tr>
 
@@ -564,7 +582,7 @@ function OrderRow({
                 {order.status === "contacted" && (
                   <Button
                     variant="secondary"
-                    onClick={() => onUpdateStatus(order._id, "completed")}
+                    onClick={() => setConfirmComplete(true)}
                     loading={isActionLoading}
                     className="!text-xs"
                   >

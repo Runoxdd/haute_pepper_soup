@@ -7,6 +7,7 @@ import { Reorder } from "motion/react";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { formatNGN } from "@/lib/format";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -772,44 +773,34 @@ function MenuItemRow({
 
       {/* Actions */}
       <div className="flex shrink-0 items-center gap-2">
-        {isConfirming ? (
-          <>
-            <span className="text-xs text-status-failed mr-1">
-              Deactivate?
-            </span>
-            <Button
-              variant="ghost"
-              onClick={() => onToggleActive(item._id, item.is_active)}
-              loading={isLoading}
-              className="!px-3 !py-1.5 !text-xs"
-            >
-              Yes
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => setConfirmDeactivate(null)}
-              className="!px-3 !py-1.5 !text-xs"
-            >
-              No
-            </Button>
-          </>
-        ) : (
-          <Button
-            variant={item.is_active ? "ghost" : "secondary"}
-            onClick={() => {
-              if (item.is_active) {
-                setConfirmDeactivate(item._id);
-              } else {
-                onToggleActive(item._id, item.is_active);
-              }
-            }}
-            loading={isLoading}
-            className="!px-3 !py-1.5 !text-xs"
-          >
-            {item.is_active ? "Deactivate" : "Reactivate"}
-          </Button>
-        )}
+        <Button
+          variant={item.is_active ? "ghost" : "secondary"}
+          onClick={() => {
+            if (item.is_active) {
+              setConfirmDeactivate(item._id);
+            } else {
+              onToggleActive(item._id, item.is_active);
+            }
+          }}
+          loading={isLoading}
+          className="!px-3 !py-1.5 !text-xs"
+        >
+          {item.is_active ? "Deactivate" : "Reactivate"}
+        </Button>
       </div>
+
+      {/* Deactivation confirmation dialog */}
+      <ConfirmDialog
+        open={isConfirming}
+        variant="destructive"
+        title="Deactivate Dish"
+        message={`Are you sure you want to deactivate "${item.name}"? It will no longer appear on the menu.`}
+        confirmLabel="Deactivate"
+        cancelLabel="Keep Active"
+        loading={isLoading}
+        onConfirm={() => onToggleActive(item._id, item.is_active)}
+        onCancel={() => setConfirmDeactivate(null)}
+      />
     </GlassCard>
   );
 }
