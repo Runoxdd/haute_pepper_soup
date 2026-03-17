@@ -542,7 +542,7 @@ function SidesPanel({
     }
     onUpdate([...sides, trimmed]);
     setNewSide("");
-    setAdding(false);
+    // Stay in adding mode so user can keep typing more items
   };
 
   const handleRemove = (side: string) => {
