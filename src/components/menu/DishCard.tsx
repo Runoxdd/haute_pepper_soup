@@ -7,6 +7,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import SideSelector from "@/components/menu/SideSelector";
 import { useCartStore } from "@/lib/store";
+import { useToastStore } from "@/lib/toast";
 import { formatNGN } from "@/lib/format";
 
 interface DishCardProps {
@@ -39,6 +40,7 @@ export default function DishCard({
   );
   const [imageError, setImageError] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
+  const addToast = useToastStore((s) => s.addToast);
 
   const handleAddToOrder = () => {
     addItem({
@@ -47,6 +49,7 @@ export default function DishCard({
       side: selectedSide,
       unitPrice: price,
     });
+    addToast("Added to cart!", "success");
   };
 
   return (

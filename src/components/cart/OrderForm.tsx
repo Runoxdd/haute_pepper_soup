@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { useCartStore } from "@/lib/store";
+import { useToastStore } from "@/lib/toast";
 import { formatNGN } from "@/lib/format";
 
 interface FormErrors {
@@ -45,6 +46,7 @@ export default function OrderForm() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
+  const addToast = useToastStore((s) => s.addToast);
 
   const totalPrice = items.reduce(
     (sum, item) => sum + item.unitPrice * item.quantity,
@@ -163,6 +165,7 @@ export default function OrderForm() {
 
         const { reference } = await res.json();
         clearCart();
+        addToast("Order placed!", "success");
         router.push(`/order/${reference}`);
       } catch (err) {
         const message =
