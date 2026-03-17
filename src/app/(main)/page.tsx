@@ -111,19 +111,23 @@ export default async function HomePage() {
 
           {/* Scroll indicator */}
           {featuredDishes.length > 0 && (
-            <div className="mt-16 flex flex-col items-center gap-2 sm:mt-20">
-              <span className="text-xs uppercase tracking-widest text-white/50">
+            <a
+              href="#featured"
+              className="mt-16 flex flex-col items-center gap-2 sm:mt-20 group"
+              aria-label="Scroll to featured dishes"
+            >
+              <span className="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition-colors">
                 Scroll to explore
               </span>
               <div className="h-8 w-px bg-gradient-to-b from-white/40 to-transparent" />
-            </div>
+            </a>
           )}
         </div>
       </section>
 
       {/* ── Featured Dishes Section ──────────────────────────────────── */}
       {featuredDishes.length > 0 && (
-        <section className="relative px-6 pb-24 pt-12 sm:pb-32 sm:pt-16">
+        <section id="featured" className="relative px-6 pb-24 pt-12 sm:pb-32 sm:pt-16">
           <div className="mx-auto max-w-6xl">
             {/* Section heading */}
             <div className="mb-12 text-center sm:mb-16">
