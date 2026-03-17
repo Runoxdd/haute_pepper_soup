@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import SideSelector from "@/components/menu/SideSelector";
+import ImageZoom from "@/components/menu/ImageZoom";
 import { useCartStore } from "@/lib/store";
 import { useToastStore } from "@/lib/toast";
 import { formatNGN } from "@/lib/format";
@@ -39,6 +40,7 @@ export default function DishCard({
     availableSides[0] ?? "None",
   );
   const [imageError, setImageError] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
   const addToast = useToastStore((s) => s.addToast);
 
@@ -73,22 +75,37 @@ export default function DishCard({
               </span>
             </div>
           ) : (
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="h-full w-full will-change-transform"
+            <button
+              type="button"
+              onClick={() => setZoomOpen(true)}
+              aria-label={`View ${name} fullscreen`}
+              className="h-full w-full cursor-zoom-in"
             >
-              <Image
-                src={imageUrl}
-                alt={`${name} — Nigerian pepper soup dish`}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                className="object-cover"
-                onError={() => setImageError(true)}
-              />
-            </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="h-full w-full will-change-transform"
+              >
+                <Image
+                  src={imageUrl}
+                  alt={`${name} — Nigerian pepper soup dish`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover"
+                  onError={() => setImageError(true)}
+                />
+              </motion.div>
+            </button>
           )}
         </div>
+
+        {/* Fullscreen Image Zoom */}
+        <ImageZoom
+          src={imageUrl}
+          alt={`${name} — Nigerian pepper soup dish`}
+          open={zoomOpen}
+          onClose={() => setZoomOpen(false)}
+        />
 
         {/* Card Content */}
         <div className="flex flex-col flex-1 gap-3 p-5">
