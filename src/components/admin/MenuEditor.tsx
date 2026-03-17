@@ -503,6 +503,7 @@ function SidesPanel({
   return (
     <div className="flex flex-wrap items-center gap-1.5" aria-label={`Side options for dish ${itemId}`}>
       <Reorder.Group
+        axis="x"
         values={sides}
         onReorder={onUpdate}
         className="flex flex-wrap items-center gap-1.5"
@@ -513,8 +514,9 @@ function SidesPanel({
             key={side}
             value={side}
             as="span"
-            whileDrag={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}
-            className="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-[rgba(255,255,255,0.1)] bg-gray-50 dark:bg-[rgba(255,255,255,0.05)] px-2.5 py-0.5 text-xs text-text-secondary cursor-grab active:cursor-grabbing"
+            layout
+            whileDrag={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 10 }}
+            className="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-[rgba(255,255,255,0.1)] bg-gray-50 dark:bg-[rgba(255,255,255,0.05)] px-2.5 py-0.5 text-xs text-text-secondary cursor-grab active:cursor-grabbing select-none"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3 opacity-30 shrink-0" aria-hidden="true">
               <path d="M6 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm6-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />

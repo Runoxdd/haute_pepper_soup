@@ -199,6 +199,7 @@ function TagEditor({
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       <Reorder.Group
+        axis="x"
         values={tags}
         onReorder={onChange}
         className="flex flex-wrap items-center gap-1.5"
@@ -209,8 +210,9 @@ function TagEditor({
             key={tag}
             value={tag}
             as="span"
-            whileDrag={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}
-            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs cursor-grab active:cursor-grabbing ${accentClass}`}
+            layout
+            whileDrag={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 10 }}
+            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs cursor-grab active:cursor-grabbing select-none ${accentClass}`}
           >
             {/* Drag handle */}
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3 opacity-30 shrink-0" aria-hidden="true">
