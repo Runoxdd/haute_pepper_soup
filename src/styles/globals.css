@@ -181,6 +181,12 @@ html.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
 }
 
+/* ─── Scroll Offset for Sticky Header ────────────────────────────────────── */
+
+section[id] {
+  scroll-margin-top: 5rem;
+}
+
 /* ─── Focus States ────────────────────────────────────────────────────────── */
 
 :focus-visible {

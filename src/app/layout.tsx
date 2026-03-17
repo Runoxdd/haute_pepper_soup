@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import ToastContainer from "@/components/ui/Toast";
+import BackToTop from "@/components/ui/BackToTop";
 import ThemeProvider from "@/components/ui/ThemeProvider";
 
 const playfair = Playfair_Display({
@@ -80,7 +82,9 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <BackToTop />
           <WhatsAppButton />
+          <ToastContainer />
         </ThemeProvider>
       </body>
     </html>

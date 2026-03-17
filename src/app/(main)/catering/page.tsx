@@ -129,6 +129,12 @@ export default function CateringPage() {
             celebration. From intimate private dining to grand wedding
             receptions, we deliver an unforgettable culinary experience.
           </p>
+          <a
+            href="#inquiry"
+            className="mt-8 inline-flex h-14 items-center justify-center rounded-full bg-brand-lemon-dark dark:bg-brand-lemon px-10 text-base font-semibold text-white dark:text-[#0A0A0A] transition-transform hover:scale-[1.03] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-brand-dark shadow-lg"
+          >
+            Request a Quote
+          </a>
         </div>
       </section>
 

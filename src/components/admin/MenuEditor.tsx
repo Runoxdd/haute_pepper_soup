@@ -7,6 +7,7 @@ import { Reorder } from "motion/react";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { formatNGN } from "@/lib/format";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -68,6 +69,7 @@ export default function MenuEditor({ initialItems }: MenuEditorProps) {
   const [items, setItems] = useState<MenuItemData[]>(initialItems);
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [inlineEdit, setInlineEdit] = useState<InlineEditState | null>(null);
   const [confirmDeactivate, setConfirmDeactivate] = useState<string | null>(
     null,
@@ -294,13 +296,53 @@ export default function MenuEditor({ initialItems }: MenuEditorProps) {
 
   // ─── Render ──────────────────────────────────────────────────────────────
 
-  const activeItems = items.filter((i) => i.is_active);
-  const inactiveItems = items.filter((i) => !i.is_active);
+  const normalizedQuery = searchQuery.toLowerCase().trim();
+  const filteredItems = normalizedQuery
+    ? items.filter((i) => i.name.toLowerCase().includes(normalizedQuery))
+    : items;
+  const activeItems = filteredItems.filter((i) => i.is_active);
+  const inactiveItems = filteredItems.filter((i) => !i.is_active);
 
   return (
     <div className="space-y-6">
-      {/* Add Dish Button / Form Toggle */}
-      <div className="flex justify-end">
+      {/* Search + Add Dish */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative flex-1 max-w-md">
+          <svg
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted pointer-events-none"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+            />
+          </svg>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search dishes by name\u2026"
+            aria-label="Search dishes"
+            className="w-full rounded-xl border border-glass-border bg-glass-bg py-2.5 pl-10 pr-10 text-sm text-text-primary placeholder:text-text-muted transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:ring-offset-brand-dark"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              aria-label="Clear search"
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-text-muted hover:text-text-primary hover:bg-glass-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+              </svg>
+            </button>
+          )}
+        </div>
         <Button
           variant={showAddForm ? "ghost" : "primary"}
           onClick={() => setShowAddForm(!showAddForm)}
@@ -463,6 +505,15 @@ export default function MenuEditor({ initialItems }: MenuEditorProps) {
             ))}
           </div>
         </section>
+      )}
+
+      {/* No results */}
+      {normalizedQuery && activeItems.length === 0 && inactiveItems.length === 0 && (
+        <div className="py-12 text-center">
+          <p className="text-sm text-text-muted">
+            No dishes matching &ldquo;{searchQuery.trim()}&rdquo;
+          </p>
+        </div>
       )}
     </div>
   );
@@ -772,44 +823,34 @@ function MenuItemRow({
 
       {/* Actions */}
       <div className="flex shrink-0 items-center gap-2">
-        {isConfirming ? (
-          <>
-            <span className="text-xs text-status-failed mr-1">
-              Deactivate?
-            </span>
-            <Button
-              variant="ghost"
-              onClick={() => onToggleActive(item._id, item.is_active)}
-              loading={isLoading}
-              className="!px-3 !py-1.5 !text-xs"
-            >
-              Yes
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => setConfirmDeactivate(null)}
-              className="!px-3 !py-1.5 !text-xs"
-            >
-              No
-            </Button>
-          </>
-        ) : (
-          <Button
-            variant={item.is_active ? "ghost" : "secondary"}
-            onClick={() => {
-              if (item.is_active) {
-                setConfirmDeactivate(item._id);
-              } else {
-                onToggleActive(item._id, item.is_active);
-              }
-            }}
-            loading={isLoading}
-            className="!px-3 !py-1.5 !text-xs"
-          >
-            {item.is_active ? "Deactivate" : "Reactivate"}
-          </Button>
-        )}
+        <Button
+          variant={item.is_active ? "ghost" : "secondary"}
+          onClick={() => {
+            if (item.is_active) {
+              setConfirmDeactivate(item._id);
+            } else {
+              onToggleActive(item._id, item.is_active);
+            }
+          }}
+          loading={isLoading}
+          className="!px-3 !py-1.5 !text-xs"
+        >
+          {item.is_active ? "Deactivate" : "Reactivate"}
+        </Button>
       </div>
+
+      {/* Deactivation confirmation dialog */}
+      <ConfirmDialog
+        open={isConfirming}
+        variant="destructive"
+        title="Deactivate Dish"
+        message={`Are you sure you want to deactivate "${item.name}"? It will no longer appear on the menu.`}
+        confirmLabel="Deactivate"
+        cancelLabel="Keep Active"
+        loading={isLoading}
+        onConfirm={() => onToggleActive(item._id, item.is_active)}
+        onCancel={() => setConfirmDeactivate(null)}
+      />
     </GlassCard>
   );
 }

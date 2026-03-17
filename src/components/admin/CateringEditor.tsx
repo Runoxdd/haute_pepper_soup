@@ -3,6 +3,7 @@
 import { useState, useCallback, type FormEvent } from "react";
 import { Reorder } from "motion/react";
 import { GlassCard } from "@/components/ui/GlassCard";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { formatNGN } from "@/lib/format";
 
 interface CateringService {
@@ -26,6 +27,11 @@ export function CateringEditor({ initialServices }: CateringEditorProps) {
   const [services, setServices] = useState<CateringService[]>(initialServices);
   const [editing, setEditing] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  const [confirmDeactivate, setConfirmDeactivate] = useState<string | null>(null);
+
+  const serviceToDeactivate = confirmDeactivate
+    ? services.find((s) => s._id === confirmDeactivate)
+    : null;
 
   return (
     <div>
@@ -60,6 +66,33 @@ export function CateringEditor({ initialServices }: CateringEditorProps) {
           onCancel={() => setAdding(false)}
         />
       )}
+
+      {/* Deactivation confirmation dialog */}
+      <ConfirmDialog
+        open={confirmDeactivate !== null}
+        variant="destructive"
+        title="Deactivate Service"
+        message={
+          serviceToDeactivate
+            ? `Are you sure you want to deactivate "${serviceToDeactivate.name}"? It will no longer be visible to customers.`
+            : ""
+        }
+        confirmLabel="Deactivate"
+        cancelLabel="Keep Active"
+        onConfirm={() => {
+          if (confirmDeactivate) {
+            setServices((prev) =>
+              prev.map((s) =>
+                s._id === confirmDeactivate
+                  ? { ...s, is_active: false }
+                  : s
+              )
+            );
+          }
+          setConfirmDeactivate(null);
+        }}
+        onCancel={() => setConfirmDeactivate(null)}
+      />
 
       {/* Service list */}
       <div className="space-y-4">
@@ -139,13 +172,17 @@ export function CateringEditor({ initialServices }: CateringEditorProps) {
                     <button
                       type="button"
                       onClick={() => {
-                        setServices((prev) =>
-                          prev.map((s) =>
-                            s._id === service._id
-                              ? { ...s, is_active: !s.is_active }
-                              : s
-                          )
-                        );
+                        if (service.is_active) {
+                          setConfirmDeactivate(service._id);
+                        } else {
+                          setServices((prev) =>
+                            prev.map((s) =>
+                              s._id === service._id
+                                ? { ...s, is_active: true }
+                                : s
+                            )
+                          );
+                        }
                       }}
                       className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon ${
                         service.is_active

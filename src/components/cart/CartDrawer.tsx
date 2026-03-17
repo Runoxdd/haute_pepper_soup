@@ -149,9 +149,32 @@ export default function CartDrawer({
               )}
             </div>
 
-            {/* Footer with total + actions */}
+            {/* Footer with order summary + actions */}
             {items.length > 0 && (
               <div className="border-t border-glass-border px-5 py-4 space-y-3">
+                {/* Order Summary Breakdown */}
+                <div className="space-y-1.5">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+                    Order Summary
+                  </h3>
+                  {items.map((item) => (
+                    <div
+                      key={`${item.menuItemId}_${item.side}`}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="text-text-secondary truncate mr-2">
+                        {item.name} &times; {item.quantity}
+                      </span>
+                      <span className="tabular-nums text-text-primary whitespace-nowrap">
+                        {formatNGN(item.unitPrice * item.quantity)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-glass-border" />
+
                 {/* Total */}
                 <div className="flex items-center justify-between">
                   <span className="text-text-secondary font-medium">Total</span>
