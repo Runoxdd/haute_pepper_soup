@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getActiveMenuItems } from "@/lib/data";
 import { MenuGallery } from "@/components/menu/MenuGallery";
+import { RecentlyViewed } from "@/components/menu/RecentlyViewed";
 
 export const revalidate = 60;
 
@@ -44,6 +45,9 @@ export default async function MenuPage() {
             </p>
           </div>
         )}
+
+        {/* Recently viewed dishes — client component, renders from localStorage */}
+        <RecentlyViewed />
       </div>
     </div>
   );

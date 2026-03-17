@@ -9,6 +9,7 @@ import SideSelector from "@/components/menu/SideSelector";
 import ImageZoom from "@/components/menu/ImageZoom";
 import { useCartStore } from "@/lib/store";
 import { useToastStore } from "@/lib/toast";
+import { useRecentlyViewedStore } from "@/lib/recently-viewed";
 import { formatNGN } from "@/lib/format";
 
 interface DishCardProps {
@@ -43,6 +44,7 @@ export default function DishCard({
   const [zoomOpen, setZoomOpen] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
   const addToast = useToastStore((s) => s.addToast);
+  const addViewed = useRecentlyViewedStore((s) => s.addViewed);
 
   const handleAddToOrder = () => {
     addItem({
@@ -51,6 +53,7 @@ export default function DishCard({
       side: selectedSide,
       unitPrice: price,
     });
+    addViewed({ id, name, imageUrl });
     addToast("Added to cart!", "success");
   };
 
@@ -62,11 +65,12 @@ export default function DishCard({
 
   return (
     <motion.article
+      id={`dish-${id}`}
       initial={{ opacity: 0, y: 30, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="will-change-transform"
+      className="will-change-transform scroll-mt-24"
     >
       <GlassCard hover className="overflow-hidden flex flex-col h-full">
         {/* Dish Image */}
