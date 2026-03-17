@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useCallback, type FormEvent } from "react";
-import { Reorder } from "motion/react";
+import { useState, useCallback, useRef, type FormEvent } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { formatNGN } from "@/lib/format";
@@ -233,43 +232,66 @@ function TagEditor({
     onChange(tags.filter((t) => t !== tag));
   };
 
+  const dragIdx = useRef<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+  const handleDragStart = (idx: number) => {
+    dragIdx.current = idx;
+  };
+
+  const handleDragOver = (e: React.DragEvent, idx: number) => {
+    e.preventDefault();
+    if (dragIdx.current !== null && dragIdx.current !== idx) {
+      setDragOverIdx(idx);
+    }
+  };
+
+  const handleDrop = (idx: number) => {
+    if (dragIdx.current !== null && dragIdx.current !== idx) {
+      const updated = [...tags];
+      const [moved] = updated.splice(dragIdx.current, 1);
+      updated.splice(idx, 0, moved);
+      onChange(updated);
+    }
+    dragIdx.current = null;
+    setDragOverIdx(null);
+  };
+
+  const handleDragEnd = () => {
+    dragIdx.current = null;
+    setDragOverIdx(null);
+  };
+
   return (
     <div className="flex flex-wrap items-center gap-1.5">
-      <Reorder.Group
-        axis="x"
-        values={tags}
-        onReorder={onChange}
-        className="flex flex-wrap items-center gap-1.5"
-        as="div"
-      >
-        {tags.map((tag) => (
-          <Reorder.Item
-            key={tag}
-            value={tag}
-            as="span"
-            layout
-            whileDrag={{ scale: 1.05, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 10 }}
-            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs cursor-grab active:cursor-grabbing select-none ${accentClass}`}
+      {tags.map((tag, idx) => (
+        <span
+          key={tag}
+          draggable
+          onDragStart={() => handleDragStart(idx)}
+          onDragOver={(e) => handleDragOver(e, idx)}
+          onDrop={() => handleDrop(idx)}
+          onDragEnd={handleDragEnd}
+          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs cursor-grab active:cursor-grabbing select-none transition-all duration-150 ${accentClass} ${
+            dragOverIdx === idx ? "ring-2 ring-brand-lemon-dark dark:ring-brand-lemon scale-105" : ""
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3 opacity-30 shrink-0" aria-hidden="true">
+            <path d="M6 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm6-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
+          </svg>
+          {tag}
+          <button
+            type="button"
+            onClick={() => handleRemove(tag)}
+            aria-label={`Remove "${tag}"`}
+            className="ml-0.5 rounded-full p-0.5 text-current opacity-50 hover:opacity-100 hover:text-red-500 transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-400"
           >
-            {/* Drag handle */}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3 opacity-30 shrink-0" aria-hidden="true">
-              <path d="M6 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm6-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true">
+              <path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z" />
             </svg>
-            {tag}
-            <button
-              type="button"
-              onClick={() => handleRemove(tag)}
-              aria-label={`Remove "${tag}"`}
-              className="ml-0.5 rounded-full p-0.5 text-current opacity-50 hover:opacity-100 hover:text-red-500 transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-400"
-              onPointerDown={(e) => e.stopPropagation()}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3" aria-hidden="true">
-                <path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z" />
-              </svg>
-            </button>
-          </Reorder.Item>
-        ))}
-      </Reorder.Group>
+          </button>
+        </span>
+      ))}
 
       {adding ? (
         <span className="inline-flex items-center gap-1.5">
