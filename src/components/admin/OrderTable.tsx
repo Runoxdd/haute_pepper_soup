@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
@@ -100,6 +101,8 @@ export default function OrderTable({ initialData }: OrderTableProps) {
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedOrders, setSelectedOrders] = useState<Set<string>>(new Set());
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   // ─── Fetch orders ──────────────────────────────────────────────────────
 
@@ -202,7 +205,74 @@ export default function OrderTable({ initialData }: OrderTableProps) {
   const handleTabChange = useCallback((tab: FilterTab) => {
     setActiveTab(tab);
     setCurrentPage(1);
+    setSelectedOrders(new Set());
   }, []);
+
+  // ─── Bulk selection ─────────────────────────────────────────────────
+
+  const toggleSelectOrder = useCallback((orderId: string) => {
+    setSelectedOrders((prev) => {
+      const next = new Set(prev);
+      if (next.has(orderId)) {
+        next.delete(orderId);
+      } else {
+        next.add(orderId);
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedOrders((prev) => {
+      if (prev.size === data.orders.length) {
+        return new Set();
+      }
+      return new Set(data.orders.map((o) => o._id));
+    });
+  }, [data.orders]);
+
+  const handleBulkAction = useCallback(
+    async (newStatus: OrderStatus) => {
+      if (selectedOrders.size === 0) return;
+      setBulkLoading(true);
+
+      const ids = Array.from(selectedOrders);
+      const results = await Promise.allSettled(
+        ids.map((id) =>
+          fetch(`/api/admin/orders/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: newStatus }),
+          }).then((res) => {
+            if (!res.ok) throw new Error(`Failed for ${id}`);
+            return id;
+          }),
+        ),
+      );
+
+      // Optimistic update for successful requests
+      const succeededIds = new Set(
+        results
+          .filter((r): r is PromiseFulfilledResult<string> => r.status === "fulfilled")
+          .map((r) => r.value),
+      );
+
+      if (succeededIds.size > 0) {
+        setData((prev) => ({
+          ...prev,
+          orders: prev.orders.map((o) =>
+            succeededIds.has(o._id)
+              ? { ...o, status: newStatus, updated_at: new Date().toISOString() }
+              : o,
+          ),
+        }));
+      }
+
+      setSelectedOrders(new Set());
+      setBulkLoading(false);
+    },
+    [selectedOrders],
+  );
 
   // ─── Render ────────────────────────────────────────────────────────────
 
@@ -291,6 +361,15 @@ export default function OrderTable({ initialData }: OrderTableProps) {
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-glass-border bg-glass-bg">
+              <th className="w-10 px-4 py-3">
+                <input
+                  type="checkbox"
+                  checked={data.orders.length > 0 && selectedOrders.size === data.orders.length}
+                  onChange={toggleSelectAll}
+                  aria-label="Select all orders"
+                  className="h-4 w-4 rounded border-glass-border bg-glass-bg text-brand-lemon-dark accent-brand-lemon-dark dark:accent-brand-lemon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon cursor-pointer"
+                />
+              </th>
               <th className="px-4 py-3 font-medium text-text-muted">Ref</th>
               <th className="px-4 py-3 font-medium text-text-muted">Customer</th>
               <th className="hidden px-4 py-3 font-medium text-text-muted sm:table-cell">Phone</th>
@@ -304,7 +383,7 @@ export default function OrderTable({ initialData }: OrderTableProps) {
           <tbody className={loading ? "opacity-50 transition-opacity" : ""} aria-live="polite" aria-busy={loading}>
             {data.orders.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-12 text-center text-text-muted">
+                <td colSpan={9} className="px-4 py-12 text-center text-text-muted">
                   No orders found matching your filters.
                 </td>
               </tr>
@@ -322,6 +401,8 @@ export default function OrderTable({ initialData }: OrderTableProps) {
                   onUpdateStatus={updateOrderStatus}
                   onResendNotification={resendNotification}
                   isActionLoading={actionLoading === order._id}
+                  isSelected={selectedOrders.has(order._id)}
+                  onToggleSelect={() => toggleSelectOrder(order._id)}
                 />
               ))
             )}
@@ -355,6 +436,54 @@ export default function OrderTable({ initialData }: OrderTableProps) {
           </div>
         </div>
       )}
+
+      {/* Floating Bulk Action Bar */}
+      <AnimatePresence>
+        {selectedOrders.size > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2"
+          >
+            <div className="flex items-center gap-3 rounded-2xl border border-glass-border bg-white dark:bg-brand-dark px-5 py-3 shadow-lg dark:shadow-none">
+              <span className="text-sm font-medium text-text-primary whitespace-nowrap">
+                {selectedOrders.size} selected
+              </span>
+              <div className="h-5 w-px bg-glass-border" aria-hidden="true" />
+              <Button
+                variant="ghost"
+                onClick={() => handleBulkAction("contacted")}
+                loading={bulkLoading}
+                disabled={bulkLoading}
+                className="!px-3 !py-1.5 !text-xs"
+              >
+                Mark Contacted
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => handleBulkAction("completed")}
+                loading={bulkLoading}
+                disabled={bulkLoading}
+                className="!px-3 !py-1.5 !text-xs"
+              >
+                Mark Completed
+              </Button>
+              <button
+                type="button"
+                onClick={() => setSelectedOrders(new Set())}
+                aria-label="Clear selection"
+                className="ml-1 rounded-lg p-1.5 text-text-muted hover:text-text-primary hover:bg-glass-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+                  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                </svg>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -368,6 +497,8 @@ interface OrderRowProps {
   onUpdateStatus: (orderId: string, status: OrderStatus) => void;
   onResendNotification: (orderId: string) => void;
   isActionLoading: boolean;
+  isSelected: boolean;
+  onToggleSelect: () => void;
 }
 
 function OrderRow({
@@ -377,6 +508,8 @@ function OrderRow({
   onUpdateStatus,
   onResendNotification,
   isActionLoading,
+  isSelected,
+  onToggleSelect,
 }: OrderRowProps) {
   const [confirmComplete, setConfirmComplete] = useState(false);
   const itemsCount = order.items.reduce((sum, i) => sum + i.quantity, 0);
@@ -397,6 +530,15 @@ function OrderRow({
         aria-expanded={isExpanded}
         aria-label={`Order ${order.reference}, ${order.customer_name}, ${order.status}. Press to ${isExpanded ? "collapse" : "expand"} details.`}
       >
+        <td className="w-10 px-4 py-3" onClick={(e) => e.stopPropagation()}>
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={onToggleSelect}
+            aria-label={`Select order ${order.reference}`}
+            className="h-4 w-4 rounded border-glass-border bg-glass-bg text-brand-lemon-dark accent-brand-lemon-dark dark:accent-brand-lemon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon cursor-pointer"
+          />
+        </td>
         <td className="px-4 py-3">
           <span className="font-mono text-xs font-semibold text-brand-lemon-dark dark:text-brand-lemon">
             {order.reference}
@@ -495,7 +637,7 @@ function OrderRow({
       {/* Expanded Details */}
       {isExpanded && (
         <tr className="border-b border-glass-border">
-          <td colSpan={8} className="px-4 py-4">
+          <td colSpan={9} className="px-4 py-4">
             <GlassCard className="p-4 space-y-3">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {/* Contact Info */}
