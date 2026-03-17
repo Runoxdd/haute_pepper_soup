@@ -1,0 +1,269 @@
+@import "tailwindcss";
+
+/* ─── Class-based dark mode (toggled via html.dark) ──────────────────────── */
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Brand Design Tokens ─────────────────────────────────────────────────── */
+
+@theme {
+  --color-brand-dark: #0A0A0A;
+  --color-brand-lemon: #D1FF00;
+  --color-brand-lemon-dark: #4A6600;  /* Darkened lemon for light-mode text contrast */
+  /* Legacy purple tokens kept for reference only — brand uses green */
+  --color-brand-purple: #4A6600;
+  --color-brand-purple-light: #6B8E00;
+
+  /* Light mode defaults (glass-bg, glass-border, glass-hover used by components) */
+  --color-glass-bg: rgba(0, 0, 0, 0.03);
+  --color-glass-border: rgba(0, 0, 0, 0.1);
+  --color-glass-hover: rgba(0, 0, 0, 0.06);
+
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4A4A4A;
+  --color-text-muted: #8A8A8A;
+
+  --color-status-pending: #F59E0B;
+  --color-status-contacted: #3B82F6;
+  --color-status-completed: #10B981;
+  --color-status-failed: #EF4444;
+
+  --font-serif: var(--font-playfair), "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-dm-sans), "DM Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* ─── Dark Mode Token Overrides ──────────────────────────────────────────── */
+
+html.dark {
+  --color-glass-bg: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+  --color-glass-hover: rgba(255, 255, 255, 0.08);
+
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-muted: rgba(255, 255, 255, 0.35);
+}
+
+/* ─── Base Layer ──────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: rgba(123, 44, 191, 0.15);
+}
+
+html.dark *,
+html.dark *::before,
+html.dark *::after {
+  -webkit-tap-highlight-color: rgba(209, 255, 0, 0.15);
+}
+
+/* ─── Light Mode (default) ────────────────────────────────────────────────── */
+
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: #FAFAF9;
+  color: #1A1A1A;
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+html.dark body {
+  background-color: var(--color-brand-dark);
+  color: var(--color-text-primary);
+}
+
+/* ─── Cinematic Background ────────────────────────────────────────────────── */
+
+.cinematic-bg {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(123, 44, 191, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(209, 255, 0, 0.05) 0%, transparent 50%),
+    var(--color-brand-dark);
+}
+
+/* ─── Progressive Glassmorphism ───────────────────────────────────────────── */
+
+/* Light mode: clean white card with subtle shadow */
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode: gradient glass card */
+html.dark .glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+/* High-end devices with backdrop-filter support */
+@supports (backdrop-filter: blur(12px)) {
+  .glass-card {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  html.dark .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Light mode hover: green accent */
+.glass-card-hover {
+  transition: border-color 300ms ease, box-shadow 300ms ease;
+}
+
+.glass-card-hover:hover {
+  border-color: rgba(123, 44, 191, 0.3);
+  box-shadow: 0 4px 20px rgba(123, 44, 191, 0.08);
+}
+
+html.dark .glass-card-hover:hover {
+  border-color: rgba(209, 255, 0, 0.2);
+  box-shadow: 0 0 20px rgba(209, 255, 0, 0.05);
+}
+
+/* ─── Custom Scrollbar (Museum Scroll) ────────────────────────────────────── */
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Thin elegant scrollbar for desktop */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+html.dark .scrollbar-thin {
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+}
+
+html.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+html.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ─── Focus States ────────────────────────────────────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-lemon-dark);
+  outline-offset: 2px;
+}
+
+html.dark :focus-visible {
+  outline-color: var(--color-brand-lemon);
+}
+
+/* ─── Tabular Numbers for Prices ──────────────────────────────────────────── */
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Safe Area Insets for Notched Devices ─────────────────────────────────── */
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* ─── Reduced Motion ──────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Pulse Animation for WhatsApp Button ─────────────────────────────────── */
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(37, 211, 102, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+  }
+}
+
+.whatsapp-pulse {
+  animation: pulse-ring 2s ease-out 3;
+}
+
+/* ─── Spinner ─────────────────────────────────────────────────────────────── */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ─── Selection ───────────────────────────────────────────────────────────── */
+
+::selection {
+  background-color: rgba(123, 44, 191, 0.2);
+  color: #1A1A1A;
+}
+
+html.dark ::selection {
+  background-color: rgba(209, 255, 0, 0.25);
+  color: #FFFFFF;
+}
