@@ -1,20 +1,6 @@
 import { MongoClient, type Db } from "mongodb";
 
-if (!process.env.MONGODB_URI) {
-  throw new Error("MONGODB_URI environment variable is not set");
-}
-
-const uri = process.env.MONGODB_URI;
 const options = {};
-
-// ---------------------------------------------------------------------------
-// Cached connection for serverless environments
-// ---------------------------------------------------------------------------
-// In development, we store the client promise on `globalThis` so that HMR
-// (hot-module reloading) does not exhaust the MongoDB connection pool.
-// In production, a module-level variable is sufficient because the module is
-// evaluated only once per cold start.
-// ---------------------------------------------------------------------------
 
 declare global {
   // eslint-disable-next-line no-var
@@ -22,6 +8,8 @@ declare global {
 }
 
 let clientPromise: Promise<MongoClient>;
+
+const uri = process.env.MONGODB_URI ?? "";
 
 if (process.env.NODE_ENV === "development") {
   if (!globalThis._mongoClientPromise) {
@@ -46,6 +34,9 @@ export { clientPromise };
  * ```
  */
 export async function getDb(): Promise<Db> {
+  if (!process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI environment variable is not set");
+  }
   const client = await clientPromise;
   return client.db();
 }
