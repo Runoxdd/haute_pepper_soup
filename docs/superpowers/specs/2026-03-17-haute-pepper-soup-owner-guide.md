@@ -6,6 +6,8 @@ Keep this guide saved somewhere handy (maybe as a note on your phone). You'll wa
 
 ---
 
+
+
 ## 1. Getting Started
 
 ### Opening Your Admin Panel
