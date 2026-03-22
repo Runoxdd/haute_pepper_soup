@@ -46,9 +46,8 @@ interface FormErrors {
   image_url?: string;
   form?: string;
 }
-
 interface InlineEditState {
-  field: "price" | "description";
+  field: "price" | "description" | "available_sides";
   itemId: string;
   value: string;
 }
@@ -277,10 +276,10 @@ export default function MenuEditor({ initialItems }: MenuEditorProps) {
           prev.map((item) =>
             item._id === itemId
               ? {
-                  ...item,
-                  is_active: !currentlyActive,
-                  updated_at: new Date().toISOString(),
-                }
+                ...item,
+                is_active: !currentlyActive,
+                updated_at: new Date().toISOString(),
+              }
               : item,
           ),
         );
@@ -579,9 +578,8 @@ function SidesPanel({
           onDragOver={(e) => handleDragOver(e, idx)}
           onDrop={() => handleDrop(idx)}
           onDragEnd={handleDragEnd}
-          className={`inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-[rgba(255,255,255,0.1)] bg-gray-50 dark:bg-[rgba(255,255,255,0.05)] px-2.5 py-0.5 text-xs text-text-secondary cursor-grab active:cursor-grabbing select-none transition-all duration-150 ${
-            dragOverIdx === idx ? "ring-2 ring-brand-lemon-dark dark:ring-brand-lemon scale-105" : ""
-          }`}
+          className={`inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-[rgba(255,255,255,0.1)] bg-gray-50 dark:bg-[rgba(255,255,255,0.05)] px-2.5 py-0.5 text-xs text-text-secondary cursor-grab active:cursor-grabbing select-none transition-all duration-150 ${dragOverIdx === idx ? "ring-2 ring-brand-lemon-dark dark:ring-brand-lemon scale-105" : ""
+            }`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3 opacity-30 shrink-0" aria-hidden="true">
             <path d="M6 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm6-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
@@ -677,9 +675,8 @@ function MenuItemRow({
 
   return (
     <GlassCard
-      className={`flex flex-col gap-4 p-4 sm:flex-row sm:items-center ${
-        !item.is_active ? "opacity-60" : ""
-      }`}
+      className={`flex flex-col gap-4 p-4 sm:flex-row sm:items-center ${!item.is_active ? "opacity-60" : ""
+        }`}
     >
       {/* Image thumbnail */}
       <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg">
