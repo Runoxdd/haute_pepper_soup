@@ -183,11 +183,10 @@ export function CateringEditor({ initialServices }: CateringEditorProps) {
                           );
                         }
                       }}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon ${
-                        service.is_active
+                      className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon ${service.is_active
                           ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
                           : "text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10"
-                      }`}
+                        }`}
                     >
                       {service.is_active ? "Deactivate" : "Reactivate"}
                     </button>
@@ -272,9 +271,8 @@ function TagEditor({
           onDragOver={(e) => handleDragOver(e, idx)}
           onDrop={() => handleDrop(idx)}
           onDragEnd={handleDragEnd}
-          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs cursor-grab active:cursor-grabbing select-none transition-all duration-150 ${accentClass} ${
-            dragOverIdx === idx ? "ring-2 ring-brand-lemon-dark dark:ring-brand-lemon scale-105" : ""
-          }`}
+          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs cursor-grab active:cursor-grabbing select-none transition-all duration-150 ${accentClass} ${dragOverIdx === idx ? "ring-2 ring-brand-lemon-dark dark:ring-brand-lemon scale-105" : ""
+            }`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-3 w-3 opacity-30 shrink-0" aria-hidden="true">
             <path d="M6 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm6-8a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
@@ -492,4 +490,4 @@ function ServiceForm({
   );
 }
 
-export { CateringEditor };
+
