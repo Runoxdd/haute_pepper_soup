@@ -7,36 +7,35 @@ declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-let clientPromise: Promise<MongoClient>;
-
-const uri = process.env.MONGODB_URI ?? "";
-
-if (process.env.NODE_ENV === "development") {
-  if (!globalThis._mongoClientPromise) {
-    const client = new MongoClient(uri, options);
-    globalThis._mongoClientPromise = client.connect();
-  }
-  clientPromise = globalThis._mongoClientPromise;
-} else {
+function createClientPromise(): Promise<MongoClient> {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) throw new Error("MONGODB_URI environment variable is not set");
   const client = new MongoClient(uri, options);
-  clientPromise = client.connect();
+  return client.connect();
 }
 
-export { clientPromise };
-
-/**
- * Returns the default database from the connection string.
- *
- * Usage:
- * ```ts
- * const db = await getDb();
- * const items = await db.collection("menu_items").find().toArray();
- * ```
- */
-export async function getDb(): Promise<Db> {
-  if (!process.env.MONGODB_URI) {
-    throw new Error("MONGODB_URI environment variable is not set");
+export const clientPromise: Promise<MongoClient> = new Proxy(
+  {} as Promise<MongoClient>,
+  {
+    get(_, prop) {
+      const promise =
+        process.env.NODE_ENV === "development"
+          ? (globalThis._mongoClientPromise ??= createClientPromise())
+          : createClientPromise();
+      return (promise as unknown as Record<string | symbol, unknown>)[prop];
+    },
   }
-  const client = await clientPromise;
+);
+
+export async function getDb(): Promise<Db> {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) throw new Error("MONGODB_URI environment variable is not set");
+
+  const promise =
+    process.env.NODE_ENV === "development"
+      ? (globalThis._mongoClientPromise ??= createClientPromise())
+      : createClientPromise();
+
+  const client = await promise;
   return client.db();
 }
