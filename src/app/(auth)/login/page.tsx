@@ -1,6 +1,9 @@
 import { signIn } from "@/lib/auth";
 import Link from "next/link";
 
+// searchParams is read at runtime → must not be statically prerendered
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Sign In | Haute Pepper Soup",
   description: "Sign in to your Haute Pepper Soup account",
