@@ -3,21 +3,14 @@ import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 // TODO: Add Apple provider once Apple Developer account is set up
 // import Apple from "next-auth/providers/apple";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import { clientPromise } from "@/lib/mongodb";
 
-/**
- * Only load the MongoDBAdapter when MONGODB_URI is configured.
- * Without this guard, Auth.js crashes at module-load time in mock mode
- * (no DB) because clientPromise throws immediately when MONGODB_URI is missing.
- */
-async function buildAdapter() {
-  if (!process.env.MONGODB_URI) return undefined;
-  const { MongoDBAdapter } = await import("@auth/mongodb-adapter");
-  const { clientPromise } = await import("@/lib/mongodb");
-  return MongoDBAdapter(clientPromise);
-}
-
-export const { auth, handlers, signIn, signOut } = NextAuth(async () => ({
-  adapter: await buildAdapter(),
+// clientPromise is now a lazy-reject promise — safe to import when MONGODB_URI
+// is missing (mock mode). The adapter will simply never be called in that case
+// because no DB session writes are attempted.
+export const { auth, handlers, signIn, signOut } = NextAuth({
+  adapter: MongoDBAdapter(clientPromise),
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
@@ -41,7 +34,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth(async () => ({
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
+      if (account) {
+        console.log(`[Auth] Sign-in attempt: ${user?.email} via ${account.provider}`);
+      }
       // Persist the user id from the adapter into the JWT on first sign-in
       if (user?.id) {
         token.id = user.id;
@@ -53,7 +49,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth(async () => ({
       if (session.user && token.id) {
         session.user.id = token.id as string;
       }
+      if (session.user) {
+        // console.log(`[Auth] Session active for: ${session.user.email}`);
+      }
       return session;
     },
   },
-}));
+  // Ensure we trust the host (important for Vercel/proxies)
+  trustHost: true,
+});

@@ -21,8 +21,13 @@ export default async function AdminLayout({
   if (!isMockMode()) {
     const { auth } = await import("@/lib/auth");
     const session = await auth();
-    if (!session?.user?.email || !isAdmin(session.user.email)) {
-      redirect("/login");
+    
+    if (!session?.user?.email) {
+      redirect("/login?callbackUrl=/admin");
+    }
+
+    if (!isAdmin(session.user.email)) {
+      redirect("/admin/access-denied");
     }
   }
 

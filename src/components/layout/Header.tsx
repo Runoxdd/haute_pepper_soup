@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCartStore } from "@/lib/store";
+import { useSession, signOut } from "next-auth/react";
 import CartDrawer from "@/components/cart/CartDrawer";
 import OrderForm from "@/components/cart/OrderForm";
 import { AnimatePresence, motion } from "motion/react";
@@ -23,6 +24,14 @@ export default function Header() {
   const totalItems = useCartStore((s) =>
     s.items.reduce((sum, i) => sum + i.quantity, 0),
   );
+
+  const { data: session, status } = useSession();
+  const user = session?.user;
+  const isAuth = status === "authenticated";
+
+  // Simple heuristic for admin link — check if email is in ADMIN_EMAILS (via a separate check or shared list)
+  // For now, let's just show "Sign Out" or "Profile" if logged in.
+  // Actually, let's just show "Sign Out" and if they are at /admin, they'll know they are logged in.
 
   const handleCheckout = () => {
     setCartOpen(false);
@@ -102,12 +111,30 @@ export default function Header() {
             >
               Contact
             </Link>
-            <Link
-              href="/login"
-              className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-brand-lemon-dark dark:hover:text-brand-lemon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon rounded px-2 py-1"
-            >
-              Sign In
-            </Link>
+            
+            {isAuth ? (
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/admin"
+                  className="text-sm font-medium text-brand-lemon-dark dark:text-brand-lemon transition-colors duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon rounded px-2 py-1"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => signOut()}
+                  className="text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors duration-200 hover:text-text-primary rounded px-2 py-1"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200 hover:text-brand-lemon-dark dark:hover:text-brand-lemon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon rounded px-2 py-1"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
 
           {/* Right side: Theme + Cart + Mobile Menu */}
@@ -222,13 +249,34 @@ export default function Header() {
                 >
                   Contact
                 </Link>
-                <Link
-                  href="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-sm text-text-secondary transition-colors duration-200 hover:text-text-primary py-2"
-                >
-                  Sign In
-                </Link>
+                {isAuth ? (
+                  <>
+                    <Link
+                      href="/admin"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block text-sm font-medium text-brand-lemon-dark dark:text-brand-lemon py-2"
+                    >
+                      Admin Dashboard
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        signOut();
+                      }}
+                      className="block w-full text-left text-sm text-text-secondary py-2"
+                    >
+                      Sign Out ({user?.name || user?.email})
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block text-sm text-text-secondary transition-colors duration-200 hover:text-text-primary py-2"
+                  >
+                    Sign In
+                  </Link>
+                )}
               </div>
             </motion.div>
           )}

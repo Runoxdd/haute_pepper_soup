@@ -4,19 +4,39 @@ import Link from "next/link";
 // searchParams is read at runtime → must not be statically prerendered
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Sign In | Haute Pepper Soup",
-  description: "Sign in to your Haute Pepper Soup account",
+// Auth.js error code → human-readable message
+const AUTH_ERRORS: Record<string, string> = {
+  Configuration:
+    "Server configuration error. Check AUTH_SECRET and AUTH_URL env vars on Vercel.",
+  AccessDenied: "Access was denied. Your account may not be authorised.",
+  OAuthSignin:
+    "Could not start Google sign-in. Check AUTH_GOOGLE_ID is set correctly on Vercel.",
+  OAuthCallback:
+    "Google returned an error. Make sure the Authorized Redirect URI in Google Cloud Console is: [your-site]/api/auth/callback/google",
+  OAuthCreateAccount:
+    "Could not create your account. Check MONGODB_URI is set and your MongoDB cluster allows connections from anywhere (0.0.0.0/0).",
+  Default: "An unexpected sign-in error occurred. Check Vercel function logs for details.",
 };
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ callbackUrl?: string }>;
+  searchParams: Promise<{ callbackUrl?: string; error?: string }>;
 }) {
+  const { callbackUrl, error } = await searchParams;
+  const errorMessage = error ? (AUTH_ERRORS[error] ?? AUTH_ERRORS.Default) : null;
+
   return (
     <div className="flex min-h-dvh items-center justify-center bg-[#FAFAF9] dark:bg-[#0A0A0A] px-4">
       <div className="w-full max-w-sm space-y-8">
+        {/* Error banner — shown when Auth.js redirects back with ?error= */}
+        {errorMessage && (
+          <div role="alert" className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 px-4 py-3">
+            <p className="text-sm font-semibold text-red-700 dark:text-red-400">Sign-in failed</p>
+            <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errorMessage}</p>
+            {error && <p className="mt-1 text-xs text-red-400 dark:text-red-500">Error code: {error}</p>}
+          </div>
+        )}
         {/* Header */}
         <div className="text-center">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -33,9 +53,7 @@ export default function LoginPage({
           <form
             action={async () => {
               "use server";
-              const params = await searchParams;
-              const redirectTo = params.callbackUrl ?? "/menu";
-              await signIn("google", { redirectTo });
+              await signIn("google", { redirectTo: callbackUrl ?? "/menu" });
             }}
           >
             <button
@@ -51,9 +69,7 @@ export default function LoginPage({
           <form
             action={async () => {
               "use server";
-              const params = await searchParams;
-              const redirectTo = params.callbackUrl ?? "/menu";
-              await signIn("facebook", { redirectTo });
+              await signIn("facebook", { redirectTo: callbackUrl ?? "/menu" });
             }}
           >
             <button

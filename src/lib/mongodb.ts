@@ -9,7 +9,15 @@ declare global {
 
 function getClientPromise(): Promise<MongoClient> {
   const uri = process.env.MONGODB_URI;
-  if (!uri) throw new Error("MONGODB_URI environment variable is not set");
+
+  // Return a deferred-rejection promise so the module can be safely imported
+  // even when MONGODB_URI is not set (mock mode). The error is only thrown
+  // when the promise is actually awaited (i.e. when a DB query is attempted).
+  if (!uri) {
+    return new Promise((_, reject) =>
+      reject(new Error("MONGODB_URI environment variable is not set"))
+    );
+  }
 
   if (process.env.NODE_ENV === "development") {
     if (!globalThis._mongoClientPromise) {
@@ -21,9 +29,11 @@ function getClientPromise(): Promise<MongoClient> {
   return new MongoClient(uri, options).connect();
 }
 
+// Exported as a lazy promise — safe to import without MONGODB_URI set.
+// It only rejects when awaited, not at module-load time.
 export const clientPromise: Promise<MongoClient> = getClientPromise();
 
 export async function getDb(): Promise<Db> {
-  const client = await getClientPromise();
+  const client = await clientPromise;
   return client.db();
 }

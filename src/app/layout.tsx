@@ -7,6 +7,7 @@ import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import ToastContainer from "@/components/ui/Toast";
 import BackToTop from "@/components/ui/BackToTop";
 import ThemeProvider from "@/components/ui/ThemeProvider";
+import SessionProvider from "@/components/providers/SessionProvider";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -65,26 +66,28 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${playfair.variable} ${dmSans.variable}`}>
       <body className="min-h-screen antialiased font-[family-name:var(--font-dm-sans)]">
         <ThemeProvider>
-          {/* Skip to main content link for keyboard/screen reader users */}
-          <a
-            href="#main-content"
-            className="
-              sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100]
-              focus:inline-flex focus:h-10 focus:items-center focus:rounded-lg
-              focus:bg-brand-lemon-dark focus:px-4 focus:text-sm focus:font-semibold
-              focus:text-white dark:focus:bg-brand-lemon dark:focus:text-brand-dark
-            "
-          >
-            Skip to main content
-          </a>
-          <Header />
-          <main id="main-content" className="min-h-[calc(100vh-4rem)]">
-            {children}
-          </main>
-          <Footer />
-          <BackToTop />
-          <WhatsAppButton />
-          <ToastContainer />
+          <SessionProvider>
+            {/* Skip to main content link for keyboard/screen reader users */}
+            <a
+              href="#main-content"
+              className="
+                sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100]
+                focus:inline-flex focus:h-10 focus:items-center focus:rounded-lg
+                focus:bg-brand-lemon-dark focus:px-4 focus:text-sm focus:font-semibold
+                focus:text-white dark:focus:bg-brand-lemon dark:focus:text-brand-dark
+              "
+            >
+              Skip to main content
+            </a>
+            <Header />
+            <main id="main-content" className="min-h-[calc(100vh-4rem)]">
+              {children}
+            </main>
+            <Footer />
+            <BackToTop />
+            <WhatsAppButton />
+            <ToastContainer />
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>
