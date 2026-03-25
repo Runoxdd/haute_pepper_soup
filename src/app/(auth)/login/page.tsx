@@ -6,7 +6,11 @@ export const metadata = {
   description: "Sign in to your Haute Pepper Soup account",
 };
 
-export default function LoginPage() {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}) {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-[#FAFAF9] dark:bg-[#0A0A0A] px-4">
       <div className="w-full max-w-sm space-y-8">
@@ -26,7 +30,9 @@ export default function LoginPage() {
           <form
             action={async () => {
               "use server";
-              await signIn("google", { redirectTo: "/menu" });
+              const params = await searchParams;
+              const redirectTo = params.callbackUrl ?? "/menu";
+              await signIn("google", { redirectTo });
             }}
           >
             <button
@@ -42,7 +48,9 @@ export default function LoginPage() {
           <form
             action={async () => {
               "use server";
-              await signIn("facebook", { redirectTo: "/menu" });
+              const params = await searchParams;
+              const redirectTo = params.callbackUrl ?? "/menu";
+              await signIn("facebook", { redirectTo });
             }}
           >
             <button

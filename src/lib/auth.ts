@@ -3,11 +3,21 @@ import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 // TODO: Add Apple provider once Apple Developer account is set up
 // import Apple from "next-auth/providers/apple";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import { clientPromise } from "@/lib/mongodb";
 
-export const { auth, handlers, signIn, signOut } = NextAuth({
-  adapter: MongoDBAdapter(clientPromise),
+/**
+ * Only load the MongoDBAdapter when MONGODB_URI is configured.
+ * Without this guard, Auth.js crashes at module-load time in mock mode
+ * (no DB) because clientPromise throws immediately when MONGODB_URI is missing.
+ */
+async function buildAdapter() {
+  if (!process.env.MONGODB_URI) return undefined;
+  const { MongoDBAdapter } = await import("@auth/mongodb-adapter");
+  const { clientPromise } = await import("@/lib/mongodb");
+  return MongoDBAdapter(clientPromise);
+}
+
+export const { auth, handlers, signIn, signOut } = NextAuth(async () => ({
+  adapter: await buildAdapter(),
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
@@ -46,4 +56,4 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return session;
     },
   },
-});
+}));
