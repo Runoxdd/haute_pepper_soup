@@ -7,35 +7,23 @@ declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-function createClientPromise(): Promise<MongoClient> {
+function getClientPromise(): Promise<MongoClient> {
   const uri = process.env.MONGODB_URI;
   if (!uri) throw new Error("MONGODB_URI environment variable is not set");
-  const client = new MongoClient(uri, options);
-  return client.connect();
+
+  if (process.env.NODE_ENV === "development") {
+    if (!globalThis._mongoClientPromise) {
+      globalThis._mongoClientPromise = new MongoClient(uri, options).connect();
+    }
+    return globalThis._mongoClientPromise;
+  }
+
+  return new MongoClient(uri, options).connect();
 }
 
-export const clientPromise: Promise<MongoClient> = new Proxy(
-  {} as Promise<MongoClient>,
-  {
-    get(_, prop) {
-      const promise =
-        process.env.NODE_ENV === "development"
-          ? (globalThis._mongoClientPromise ??= createClientPromise())
-          : createClientPromise();
-      return (promise as unknown as Record<string | symbol, unknown>)[prop];
-    },
-  }
-);
+export const clientPromise: Promise<MongoClient> = getClientPromise();
 
 export async function getDb(): Promise<Db> {
-  const uri = process.env.MONGODB_URI;
-  if (!uri) throw new Error("MONGODB_URI environment variable is not set");
-
-  const promise =
-    process.env.NODE_ENV === "development"
-      ? (globalThis._mongoClientPromise ??= createClientPromise())
-      : createClientPromise();
-
-  const client = await promise;
+  const client = await getClientPromise();
   return client.db();
 }
