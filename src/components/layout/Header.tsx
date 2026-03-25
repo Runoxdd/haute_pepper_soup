@@ -114,6 +114,13 @@ export default function Header() {
             
             {isAuth ? (
               <div className="flex items-center gap-4">
+                {user?.image && (
+                  <img
+                    src={user.image}
+                    alt={user.name || "User"}
+                    className="h-8 w-8 rounded-full border border-gray-200 dark:border-white/10"
+                  />
+                )}
                 <Link
                   href="/admin"
                   className="text-sm font-medium text-brand-lemon-dark dark:text-brand-lemon transition-colors duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon rounded px-2 py-1"

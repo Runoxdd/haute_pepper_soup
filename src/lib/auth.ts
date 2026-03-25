@@ -38,9 +38,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (account) {
         console.log(`[Auth] Sign-in attempt: ${user?.email} via ${account.provider}`);
       }
-      // Persist the user id from the adapter into the JWT on first sign-in
+      // Persist the user id and email from the adapter into the JWT
       if (user?.id) {
         token.id = user.id;
+      }
+      if (user?.email) {
+        token.email = user.email;
       }
       return token;
     },

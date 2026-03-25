@@ -147,37 +147,9 @@ export async function middleware(req: NextRequest) {
   // --------------------------------------------------
   // 3. Admin route protection
   // --------------------------------------------------
-  const isAdminRoute = pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
-
-  if (isAdminRoute) {
-    try {
-      // Dynamic import to avoid Edge Runtime incompatibility at module level
-      const { auth } = await import("@/lib/auth");
-      const session = await auth();
-
-      if (!session?.user?.email) {
-        if (pathname.startsWith("/api/")) {
-          return NextResponse.json({ error: "Authentication required." }, { status: 401 });
-        }
-        const loginUrl = new URL("/login", req.url);
-        loginUrl.searchParams.set("callbackUrl", pathname);
-        return NextResponse.redirect(loginUrl);
-      }
-
-      if (!isAdminEmail(session.user.email)) {
-        if (pathname.startsWith("/api/")) {
-          return NextResponse.json({ error: "Forbidden — admin access required." }, { status: 403 });
-        }
-        return NextResponse.redirect(new URL("/", req.url));
-      }
-    } catch {
-      if (pathname.startsWith("/api/")) {
-        return NextResponse.json({ error: "Internal server error during auth check." }, { status: 500 });
-      }
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-  }
-
+  // REMOVED: Moved to src/app/admin/layout.tsx to avoid Edge Runtime
+  // compatibility issues with MongoDB adapter during auth() calls.
+  
   return NextResponse.next();
 }
 
@@ -186,5 +158,5 @@ export async function middleware(req: NextRequest) {
 // ---------------------------------------------------------------------------
 
 export const config = {
-  matcher: ["/api/:path*", "/admin/:path*", "/order/:path*"],
+  matcher: ["/api/:path*", "/order/:path*"],
 };

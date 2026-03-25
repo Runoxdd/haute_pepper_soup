@@ -8,10 +8,13 @@
 export function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false;
 
-  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+  const rawAdminEmails = process.env.ADMIN_EMAILS ?? "";
+  const adminEmails = rawAdminEmails
     .split(",")
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
+
+  console.log(`[isAdmin] Checking ${email}. Admin list: [${adminEmails.join(", ")}]`);
 
   return adminEmails.includes(email.trim().toLowerCase());
 }

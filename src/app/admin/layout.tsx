@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/admin";
 import { isMockMode } from "@/lib/mock-data";
+import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: {
@@ -19,16 +20,22 @@ export default async function AdminLayout({
 }>) {
   // Skip auth in mock mode so admin can be previewed without MongoDB/OAuth
   if (!isMockMode()) {
-    const { auth } = await import("@/lib/auth");
     const session = await auth();
-    
-    if (!session?.user?.email) {
+    const userEmail = session?.user?.email;
+
+    console.log(`[AdminLayout] Requested by: ${userEmail || "NO_SESSION"}`);
+
+    if (!userEmail) {
+      console.log("[AdminLayout] Redirecting to login — session invalid or missing on server");
       redirect("/login?callbackUrl=/admin");
     }
 
-    if (!isAdmin(session.user.email)) {
+    if (!isAdmin(userEmail)) {
+      console.log(`[AdminLayout] ${userEmail} is NOT authorized admin — redirecting to access-denied`);
       redirect("/admin/access-denied");
     }
+    
+    console.log(`[AdminLayout] Access GRANTED for: ${userEmail}`);
   }
 
   return (
