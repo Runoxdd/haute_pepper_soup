@@ -140,7 +140,7 @@ export default function AboutPage() {
             {/* Image */}
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
               <Image
-                src="https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=800&q=80"
+                src="/images/pepper-soup-recipe-500x500.webp"
                 alt="A bowl of traditional Nigerian pepper soup with aromatic spices"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -216,149 +216,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── Location Section ─────────────────────────────────────── */}
-      <section className="border-t border-gray-200 dark:border-[rgba(255,255,255,0.06)] px-6 py-20 sm:py-28">
-        <div className="mx-auto max-w-5xl">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
-            {/* Text */}
-            <div>
-              <h2 className="font-serif text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-                Visit Our Kitchen
-              </h2>
-              <p className="mt-4 text-sm leading-relaxed text-text-secondary sm:text-base">
-                While we specialise in delivery, you are always welcome to
-                visit our kitchen in the heart of Lekki. Come see where the
-                magic happens, meet the team, or pick up your order in person.
-              </p>
-              <div className="mt-6 space-y-3">
-                <div className="flex items-start gap-3">
-                  <svg
-                    className="mt-0.5 h-5 w-5 shrink-0 text-brand-lemon-dark dark:text-brand-lemon"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
-                    />
-                  </svg>
-                  <p className="text-sm text-text-primary">
-                    12 Admiralty Way, Lekki Phase 1, Lagos, Nigeria
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <svg
-                    className="mt-0.5 h-5 w-5 shrink-0 text-brand-lemon-dark dark:text-brand-lemon"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <div className="text-sm text-text-primary">
-                    <p>Mon - Fri: 10:00 AM - 9:00 PM</p>
-                    <p>Sat - Sun: 11:00 AM - 10:00 PM</p>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Map placeholder */}
-            <div className="glass-card relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#4A6600]/5 to-[#6B8E00]/5 dark:from-[#D1FF00]/5 dark:to-[#a8cc00]/5" />
-              <div className="relative z-10 px-6 text-center">
-                <svg
-                  className="mx-auto mb-3 h-10 w-10 text-text-muted"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1}
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
-                  />
-                </svg>
-                <p className="text-sm font-medium text-text-primary">
-                  12 Admiralty Way
-                </p>
-                <p className="text-sm text-text-secondary">
-                  Lekki Phase 1, Lagos
-                </p>
-                <p className="mt-2 text-xs text-text-muted">
-                  Lekki - Epe Expressway
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Team Section ─────────────────────────────────────────── */}
-      <section className="px-6 py-20 sm:py-28">
-        <div className="mx-auto max-w-5xl">
-          <div className="mb-12 text-center sm:mb-16">
-            <h2 className="font-serif text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-              Meet the Team
-            </h2>
-            <p className="mx-auto mt-4 max-w-md text-base text-text-secondary">
-              The passionate people behind every bowl of Haute Pepper Soup.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {TEAM.map((member) => (
-              <div
-                key={member.name}
-                className="glass-card glass-card-hover overflow-hidden rounded-2xl"
-              >
-                <div className="relative aspect-square overflow-hidden">
-                  <Image
-                    src={member.image}
-                    alt={`${member.name}, ${member.role}`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-5 sm:p-6">
-                  <h3 className="font-serif text-lg font-semibold text-text-primary">
-                    {member.name}
-                  </h3>
-                  <p className="text-sm font-medium text-brand-lemon-dark dark:text-brand-lemon">
-                    {member.role}
-                  </p>
-                  <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                    {member.bio}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ── CTA Section ──────────────────────────────────────────── */}
       <section className="border-t border-gray-200 dark:border-[rgba(255,255,255,0.06)] px-6 py-20 sm:py-28">
