@@ -40,3 +40,15 @@ export const useToastStore = create<ToastStore>((set) => ({
       toasts: state.toasts.filter((t) => t.id !== id),
     })),
 }));
+
+// ─── Convenience Helper ──────────────────────────────────────────────────────
+
+/**
+ * Standard toast helper for usage outside of components or where a hook
+ * is not convenient.
+ */
+export const toast = {
+  success: (msg: string) => useToastStore.getState().addToast(msg, "success"),
+  error: (msg: string) => useToastStore.getState().addToast(msg, "error"),
+  info: (msg: string) => useToastStore.getState().addToast(msg, "info"),
+};

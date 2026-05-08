@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
 import { getAllCateringServices } from "@/lib/data";
-import { CateringEditor } from "@/components/admin/CateringEditor";
+import { CateringPageClient } from "./client";
+import type { CateringService } from "./client";
 
 export const metadata: Metadata = {
   title: "Catering Services",
 };
 
 export default async function AdminCateringPage() {
-  const services = await getAllCateringServices();
+  const services = await getAllCateringServices() as CateringService[];
 
-  // Serialize for client component
-  const serialized = JSON.parse(JSON.stringify(services));
-
-  return <CateringEditor initialServices={serialized} />;
+  return <CateringPageClient initialServices={services} />;
 }

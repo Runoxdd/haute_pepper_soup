@@ -3,7 +3,8 @@
 import { useState, useCallback, useRef, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ImageUpload } from "./ImageUpload";
+import dynamic from "next/dynamic";
+const ImageUpload = dynamic(() => import("./ImageUpload").then(mod => mod.ImageUpload), { ssr: false });
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
