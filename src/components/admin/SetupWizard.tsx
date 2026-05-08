@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { ImageUpload } from "./ImageUpload";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -354,23 +355,14 @@ export default function SetupWizard() {
             placeholder="Plantain, Rice, Yam, None"
           />
 
-          <Input
-            label="Image URL"
-            name="image_url"
-            type="url"
-            required
+          <ImageUpload
+            label="Dish Photo"
             value={formData.image_url}
-            onChange={(e) =>
-              updateField("image_url", (e.target as HTMLInputElement).value)
-            }
-            error={errors.image_url}
-            placeholder="https://utfs.io/f/\u2026"
+            onChange={(url) => updateField("image_url", url)}
           />
-
-          <p className="text-xs text-text-muted">
-            Upload your dish photo using the upload tool, then paste the URL
-            here.
-          </p>
+          {errors.image_url && (
+            <p className="text-xs text-status-failed mt-1">{errors.image_url}</p>
+          )}
 
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="ghost" onClick={handleBack}>

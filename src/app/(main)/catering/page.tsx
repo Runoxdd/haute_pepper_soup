@@ -51,15 +51,6 @@ const INCLUSIONS = [
       </svg>
     ),
   },
-  {
-    title: "Cleanup Included",
-    description: "We handle everything after the event. You simply enjoy your celebration.",
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-  },
 ];
 
 const TESTIMONIALS = [
@@ -274,10 +265,6 @@ export default function CateringPage() {
                 <h3 className="mb-2 text-xl font-semibold text-text-primary">
                   We Handle the Rest
                 </h3>
-                <p className="text-sm leading-relaxed text-text-secondary">
-                  Our team arrives, sets up, serves, and cleans up — leaving you
-                  free to enjoy your event with your guests.
-                </p>
               </div>
             </div>
           </div>

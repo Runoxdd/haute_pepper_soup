@@ -122,3 +122,24 @@ export const updateOrderStatusSchema = z.object({
 });
 
 export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>;
+
+// ---------------------------------------------------------------------------
+// Contact form schema
+// ---------------------------------------------------------------------------
+
+export const contactFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "Name is required")
+    .max(100, "Name cannot exceed 100 characters"),
+  email: z.string().trim().email("Enter a valid email address"),
+  subject: z.string().trim().min(1, "Subject is required"),
+  message: z
+    .string()
+    .trim()
+    .min(1, "Message is required")
+    .max(2000, "Message cannot exceed 2000 characters"),
+});
+
+export type ContactFormInput = z.infer<typeof contactFormSchema>;

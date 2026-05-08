@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, type FormEvent } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { ImageUpload } from "./ImageUpload";
 import { formatNGN } from "@/lib/format";
 
 interface CateringService {
@@ -432,19 +433,11 @@ function ServiceForm({
           />
         </div>
 
-        <div>
-          <label htmlFor="svc-image" className="block text-sm font-medium text-text-primary mb-1">
-            Image URL
-          </label>
-          <input
-            id="svc-image"
-            type="url"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="https://images.unsplash.com/..."
-            className="w-full rounded-xl border border-glass-border bg-glass-bg px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lemon-dark dark:focus-visible:ring-brand-lemon"
-          />
-        </div>
+        <ImageUpload
+          label="Service Photo"
+          value={imageUrl}
+          onChange={setImageUrl}
+        />
 
         <div>
           <p className="block text-sm font-medium text-text-primary mb-2">

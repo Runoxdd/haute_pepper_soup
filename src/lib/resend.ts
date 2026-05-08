@@ -86,6 +86,27 @@ function buildOrderEmailHtml(order: Order): string {
   `.trim();
 }
 
+function buildContactEmailHtml(data: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): string {
+  return `
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+      <h2 style="color:#4A6600">New Contact Message: ${escapeHtml(data.subject)}</h2>
+      <p><strong>From:</strong> ${escapeHtml(data.name)} (&lt;${escapeHtml(data.email)}&gt;)</p>
+      <p><strong>Subject:</strong> ${escapeHtml(data.subject)}</p>
+      <div style="padding:16px;background:#f9f9f9;border-left:4px solid #4A6600;margin:16px 0">
+        ${escapeHtml(data.message).replace(/\n/g, "<br>")}
+      </div>
+      <p style="color:#666;font-size:12px">
+        Sent at ${new Date().toLocaleString("en-NG")}
+      </p>
+    </div>
+  `.trim();
+}
+
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
@@ -127,6 +148,52 @@ export async function sendOrderNotification(order: Order): Promise<SendResult> {
       to: adminEmails,
       subject: `New Order ${order.reference} — ${order.customer_name.replace(/[\r\n]/g, "")}`,
       html: buildOrderEmailHtml(order),
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Unknown email sending error";
+    return { success: false, error: message };
+  }
+}
+
+/**
+ * Send a contact form notification email to all admin addresses.
+ */
+export async function sendContactNotification(data: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): Promise<SendResult> {
+  try {
+    const fromEmail = process.env.RESEND_FROM_EMAIL;
+    if (!fromEmail) {
+      return { success: false, error: "RESEND_FROM_EMAIL is not configured" };
+    }
+
+    const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+      .split(",")
+      .map((e) => e.trim())
+      .filter(Boolean);
+
+    if (adminEmails.length === 0) {
+      return { success: false, error: "No ADMIN_EMAILS configured" };
+    }
+
+    const resend = getResendClient();
+
+    const { error } = await resend.emails.send({
+      from: `Haute Pepper Soup <${fromEmail}>`,
+      to: adminEmails,
+      replyTo: data.email,
+      subject: `Contact: ${data.subject} — ${data.name.replace(/[\r\n]/g, "")}`,
+      html: buildContactEmailHtml(data),
     });
 
     if (error) {

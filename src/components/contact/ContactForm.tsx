@@ -30,8 +30,6 @@ const SUBJECTS = [
 
 /**
  * General contact form with client-side validation.
- *
- * In mock mode, shows a success message on submission.
  */
 export default function ContactForm() {
   const [formData, setFormData] = useState<FormData>({
@@ -99,12 +97,37 @@ export default function ContactForm() {
       setLoading(true);
       setErrors({});
 
-      // In mock mode, simulate a short delay then show success
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setSubmitted(true);
-      setLoading(false);
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          if (data.code === "VALIDATION_ERROR") {
+            const serverErrs: FormErrors = {};
+            if (data.details?.fieldErrors) {
+              Object.entries(data.details.fieldErrors).forEach(([field, msgs]) => {
+                (serverErrs as any)[field] = (msgs as string[])[0];
+              });
+            }
+            setErrors(serverErrs);
+          } else {
+            setErrors({ form: data.error || "Failed to send message. Please try again." });
+          }
+          return;
+        }
+
+        setSubmitted(true);
+      } catch (err) {
+        setErrors({ form: "A network error occurred. Please check your connection." });
+      } finally {
+        setLoading(false);
+      }
     },
-    [validate],
+    [formData, validate],
   );
 
   if (submitted) {

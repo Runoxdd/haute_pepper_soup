@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { ImageUpload } from "./ImageUpload";
 import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -424,18 +425,16 @@ export default function MenuEditor({ initialItems }: MenuEditorProps) {
               />
             </div>
 
-            <Input
-              label="Image URL"
-              name="image_url"
-              type="url"
-              required
-              value={formData.image_url}
-              onChange={(e) =>
-                updateField("image_url", (e.target as HTMLInputElement).value)
-              }
-              error={errors.image_url}
-              placeholder="https://utfs.io/f/\u2026"
-            />
+            <div className="sm:col-span-2">
+              <ImageUpload
+                label="Dish Photo"
+                value={formData.image_url}
+                onChange={(url) => updateField("image_url", url)}
+              />
+              {errors.image_url && (
+                <p className="text-xs text-status-failed mt-1">{errors.image_url}</p>
+              )}
+            </div>
 
             {errors.form && (
               <p className="text-sm text-status-failed text-center" role="alert">

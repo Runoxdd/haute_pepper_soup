@@ -29,7 +29,6 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
       "Premium bowls & utensils",
       "Up to 3 pepper soup varieties",
       "Choice of side dishes",
-      "Post-event cleanup",
     ],
     highlights: [
       "Perfect for 20\u2013100 guests",
@@ -72,7 +71,6 @@ export const SERVICE_DETAILS: Record<string, ServiceDetail> = {
       "Full menu with all varieties",
       "Complete side dish buffet",
       "Pre-event tasting session",
-      "Full cleanup",
     ],
     highlights: [
       "Perfect for 100\u20131,000+ guests",

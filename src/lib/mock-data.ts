@@ -191,7 +191,6 @@ export const MOCK_CATERING_SERVICES = [
       "Premium bowls & utensils",
       "Up to 3 pepper soup varieties",
       "Choice of side dishes",
-      "Post-event cleanup",
     ],
     highlights: [
       "Perfect for 20-100 guests",
@@ -240,7 +239,6 @@ export const MOCK_CATERING_SERVICES = [
       "Full menu with all varieties",
       "Complete side dish buffet",
       "Pre-event tasting session",
-      "Full cleanup",
     ],
     highlights: [
       "Perfect for 100-1000+ guests",
