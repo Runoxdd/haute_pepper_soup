@@ -8,6 +8,9 @@ import ToastContainer from "@/components/ui/Toast";
 import BackToTop from "@/components/ui/BackToTop";
 import ThemeProvider from "@/components/ui/ThemeProvider";
 import SessionProvider from "@/components/providers/SessionProvider";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { uploadRouter } from "@/app/api/uploadthing/core";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -65,6 +68,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${playfair.variable} ${dmSans.variable}`}>
       <body className="min-h-screen antialiased font-[family-name:var(--font-dm-sans)]">
+        <NextSSRPlugin
+          routerConfig={extractRouterConfig(uploadRouter)}
+        />
         <ThemeProvider>
           <SessionProvider>
             {/* Skip to main content link for keyboard/screen reader users */}
